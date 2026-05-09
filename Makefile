@@ -2,7 +2,7 @@ PROJECT_ID := gke-infrastructure-493002
 ZONE       := us-central1-a
 
 # Detect the Pi's current public IP (run this on the Pi itself)
-PI_IP ?= $(shell curl -s --max-time 5 ifconfig.me)
+PI_IP ?= $(shell curl -4 -s --max-time 5 ifconfig.me)
 
 .PHONY: init plan up down rebuild fmt validate kubeconfig
 
