@@ -38,3 +38,12 @@ module "dns" {
   domain     = var.domain
   depends_on = [module.project_bootstrap]
 }
+
+# ESO Workload Identity binding lives here (not in the iam module) because the
+# GKE identity pool (project.svc.id.goog) only exists after the cluster is up.
+resource "google_service_account_iam_member" "eso_workload_identity" {
+  service_account_id = module.iam.eso_sa_name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "serviceAccount:${var.project_id}.svc.id.goog[external-secrets/external-secrets]"
+  depends_on         = [module.cluster]
+}

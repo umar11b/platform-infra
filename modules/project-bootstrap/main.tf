@@ -1,3 +1,7 @@
+data "google_project" "project" {
+  project_id = var.project_id
+}
+
 resource "google_project_service" "apis" {
   for_each = toset([
     "container.googleapis.com",
@@ -33,12 +37,12 @@ resource "google_billing_budget" "alert" {
   display_name    = "homelab-5-dollar-alert"
 
   budget_filter {
-    projects = ["projects/${var.project_id}"]
+    projects = ["projects/${data.google_project.project.number}"]
   }
 
   amount {
     specified_amount {
-      currency_code = "USD"
+      currency_code = "CAD"
       units         = "5"
     }
   }
