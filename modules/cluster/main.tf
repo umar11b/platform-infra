@@ -32,9 +32,6 @@ resource "google_container_cluster" "primary" {
     workload_pool = "${var.project_id}.svc.id.goog"
   }
 
-  # Dataplane V2 enables network policy without running Calico DaemonSets on small nodes
-  datapath_provider = "ADVANCED_DATAPATH"
-
   release_channel {
     channel = "REGULAR"
   }
