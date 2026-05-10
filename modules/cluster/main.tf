@@ -56,7 +56,7 @@ resource "google_container_node_pool" "primary" {
 
   autoscaling {
     min_node_count = 1
-    max_node_count = 3
+    max_node_count = 5
   }
 
   management {
@@ -65,7 +65,7 @@ resource "google_container_node_pool" "primary" {
   }
 
   node_config {
-    machine_type = "e2-small"
+    machine_type = "e2-medium"
     spot         = true
 
     service_account = var.node_service_account
