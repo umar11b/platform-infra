@@ -30,8 +30,11 @@ jobs:
       - name: terraform init
         run: terraform init
 
-      - name: terraform destroy
-        run: terraform destroy -auto-approve
+      - name: terraform destroy cluster
+        run: |
+          terraform destroy -auto-approve \
+            -target=module.cluster \
+            -target=google_service_account_iam_member.eso_workload_identity
         env:
           TF_VAR_pi_public_ip:       ${{ secrets.PI_PUBLIC_IP }}
           TF_VAR_billing_account_id: ${{ secrets.BILLING_ACCOUNT_ID }}

@@ -5,7 +5,7 @@ PLATFORM_CONFIG_DIR  ?= $(HOME)/repos/platform-config
 # Detect the Pi's current public IP (run this on the Pi itself)
 PI_IP ?= $(shell curl -4 -s --max-time 5 ifconfig.me)
 
-.PHONY: init plan up down rebuild fmt validate kubeconfig bootstrap argocd-pw
+.PHONY: init plan up down destroy-all rebuild fmt validate kubeconfig bootstrap argocd-pw
 
 init:
 	terraform init
@@ -27,11 +27,22 @@ up:
 	END=$$(date +%s); \
 	echo "Cluster up in $$(( END - START ))s"
 
+# Tears down only the GKE cluster — foundation resources (IAM, network, DNS,
+# Artifact Registry) stay alive to avoid GCP soft-delete conflicts on recreate.
 down:
+	@START=$$(date +%s); \
+	terraform destroy -auto-approve -var="pi_public_ip=$(PI_IP)" \
+		-target=module.cluster \
+		-target=google_service_account_iam_member.eso_workload_identity; \
+	END=$$(date +%s); \
+	echo "Cluster down in $$(( END - START ))s"
+
+# Full teardown — use when decommissioning the project entirely.
+destroy-all:
 	@START=$$(date +%s); \
 	terraform destroy -auto-approve -var="pi_public_ip=$(PI_IP)"; \
 	END=$$(date +%s); \
-	echo "Cluster down in $$(( END - START ))s"
+	echo "Full destroy in $$(( END - START ))s"
 
 rebuild: down up bootstrap
 
@@ -43,7 +54,7 @@ bootstrap: kubeconfig
 	@echo "==> Creating argocd namespace"
 	kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 	@echo "==> Installing Argo CD (stable)"
-	kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+	kubectl apply -n argocd --server-side --force-conflicts -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 	@echo "==> Waiting for argocd-server (up to 5m)..."
 	kubectl -n argocd rollout status deploy/argocd-server --timeout=300s
 	kubectl -n argocd rollout status deploy/argocd-repo-server --timeout=300s
