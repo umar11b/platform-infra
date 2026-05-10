@@ -44,6 +44,20 @@ resource "google_project_iam_member" "eso_secret_accessor" {
   member  = "serviceAccount:${google_service_account.eso.email}"
 }
 
+# ── cert-manager service account (Cloud DNS DNS-01 via Workload Identity) ────────
+
+resource "google_service_account" "cert_manager" {
+  project      = var.project_id
+  account_id   = "cert-manager"
+  display_name = "cert-manager DNS-01"
+}
+
+resource "google_project_iam_member" "cert_manager_dns_admin" {
+  project = var.project_id
+  role    = "roles/dns.admin"
+  member  = "serviceAccount:${google_service_account.cert_manager.email}"
+}
+
 # ── Terraform CI service account (used by GitHub Actions nightly teardown) ──────
 
 resource "google_service_account" "terraform_ci" {

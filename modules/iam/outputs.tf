@@ -10,6 +10,10 @@ output "eso_sa_name" {
   value = google_service_account.eso.name
 }
 
+output "cert_manager_sa_email" {
+  value = google_service_account.cert_manager.email
+}
+
 output "terraform_sa_email" {
   value = google_service_account.terraform_ci.email
 }

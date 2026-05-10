@@ -47,3 +47,10 @@ resource "google_service_account_iam_member" "eso_workload_identity" {
   member             = "serviceAccount:${var.project_id}.svc.id.goog[external-secrets/external-secrets]"
   depends_on         = [module.cluster]
 }
+
+resource "google_service_account_iam_member" "cert_manager_workload_identity" {
+  service_account_id = "projects/${var.project_id}/serviceAccounts/${module.iam.cert_manager_sa_email}"
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "serviceAccount:${var.project_id}.svc.id.goog[cert-manager/cert-manager]"
+  depends_on         = [module.cluster]
+}

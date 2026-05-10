@@ -34,6 +34,11 @@ output "wif_provider" {
   value       = module.iam.wif_provider
 }
 
+output "cert_manager_sa_email" {
+  description = "cert-manager GCP service account (DNS-01 via Workload Identity)"
+  value       = module.iam.cert_manager_sa_email
+}
+
 output "terraform_sa_email" {
   description = "Terraform CI service account — use as TERRAFORM_SA_EMAIL secret in GitHub Actions"
   value       = module.iam.terraform_sa_email
