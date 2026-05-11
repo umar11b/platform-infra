@@ -144,7 +144,7 @@ Tracks implementation progress across all phases of the homelab platform. Each p
 
 ## Phase 4 — Guardrails
 **Milestone:** Kyverno blocks an unsigned image deploy on camera  
-**Status:** In progress — manifests + mTLS + ESO complete; cluster validation pending
+**Status:** Complete ✓ — all policies enforced; mTLS validated; unsigned image blocked on camera
 
 ### Kyverno Policies
 - [x] `disallow-latest-tag` — block images with `:latest` tag
@@ -170,7 +170,7 @@ Tracks implementation progress across all phases of the homelab platform. Each p
 ### Istio mTLS
 - [x] `PeerAuthentication` set to `STRICT` in helloworld namespace
 - [x] `AuthorizationPolicy` scoping ingress gateway → helloworld traffic only
-- [ ] Validate mTLS: `istioctl x authz check` shows ALLOW for legitimate path, DENY for direct pod access
+- [x] Validate mTLS: `istioctl x authz check` shows ALLOW for ingress gateway; plain-text from non-mesh pod returns connection reset (curl exit 56)
 
 ### Demo Artifact
 > Screen recording: attempt to deploy a pod with an unsigned image → Kyverno admission webhook returns deny with policy name. Then attempt with `:latest` tag → second deny.
@@ -240,6 +240,6 @@ Tracks implementation progress across all phases of the homelab platform. Each p
 | 1     | Cluster up/down     | Complete ✓  |
 | 2     | GitOps spine        | Complete ✓  |
 | 3     | App end to end      | Complete ✓  |
-| 4     | Guardrails          | In progress |
+| 4     | Guardrails          | Complete ✓  |
 | 5     | Observability       | Not started |
 | 6     | Polish              | Not started |
