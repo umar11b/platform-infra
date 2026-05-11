@@ -21,3 +21,11 @@ output "terraform_sa_email" {
 output "wif_provider" {
   value = google_iam_workload_identity_pool_provider.github.name
 }
+
+output "helloworld_ci_sa_email" {
+  value = google_service_account.helloworld_ci.email
+}
+
+output "kyverno_ar_sa_email" {
+  value = google_service_account.kyverno_ar.email
+}

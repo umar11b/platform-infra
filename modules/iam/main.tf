@@ -91,9 +91,10 @@ resource "google_iam_workload_identity_pool_provider" "github" {
   }
 
   attribute_mapping = {
-    "google.subject"       = "assertion.sub"
-    "attribute.repository" = "assertion.repository"
-    "attribute.ref"        = "assertion.ref"
+    "google.subject"              = "assertion.sub"
+    "attribute.repository"        = "assertion.repository"
+    "attribute.repository_owner"  = "assertion.repository_owner"
+    "attribute.ref"               = "assertion.ref"
   }
 
   # Only tokens from this GitHub owner's repos can authenticate
@@ -104,4 +105,44 @@ resource "google_service_account_iam_member" "terraform_ci_wif" {
   service_account_id = google_service_account.terraform_ci.name
   role               = "roles/iam.workloadIdentityUser"
   member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github.name}/attribute.repository_owner/${var.github_owner}"
+}
+
+# ── helloworld CI service account (image build/push via GitHub Actions) ──────────
+
+resource "google_service_account" "helloworld_ci" {
+  project      = var.project_id
+  account_id   = "helloworld-ci"
+  display_name = "helloworld CI (GitHub Actions)"
+}
+
+resource "google_project_iam_member" "helloworld_ci_ar_writer" {
+  project = var.project_id
+  role    = "roles/artifactregistry.writer"
+  member  = "serviceAccount:${google_service_account.helloworld_ci.email}"
+}
+
+resource "google_service_account_iam_member" "helloworld_ci_wif" {
+  service_account_id = google_service_account.helloworld_ci.name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "principalSet://iam.googleapis.com/${google_iam_workload_identity_pool.github.name}/attribute.repository/${var.github_owner}/platform-helloworld"
+}
+
+# ── Kyverno service account (Artifact Registry read for image signature verification) ──
+
+resource "google_service_account" "kyverno_ar" {
+  project      = var.project_id
+  account_id   = "kyverno-ar"
+  display_name = "Kyverno AR Reader (image signature verification)"
+}
+
+resource "google_project_iam_member" "kyverno_ar_reader" {
+  project = var.project_id
+  role    = "roles/artifactregistry.reader"
+  member  = "serviceAccount:${google_service_account.kyverno_ar.email}"
+}
+
+resource "google_service_account_iam_member" "kyverno_ar_wi" {
+  service_account_id = google_service_account.kyverno_ar.name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "serviceAccount:${var.project_id}.svc.id.goog[kyverno/kyverno]"
 }

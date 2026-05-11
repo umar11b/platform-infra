@@ -44,6 +44,11 @@ output "terraform_sa_email" {
   value       = module.iam.terraform_sa_email
 }
 
+output "helloworld_ci_sa_email" {
+  description = "helloworld CI service account — use as WIF_SERVICE_ACCOUNT secret in platform-helloworld"
+  value       = module.iam.helloworld_ci_sa_email
+}
+
 output "lab_zone_name_servers" {
   description = "NS records for lab.umarzaman.ca — configure these at your registrar or Cloudflare to delegate the zone"
   value       = module.dns.name_servers
