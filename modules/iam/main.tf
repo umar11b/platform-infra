@@ -72,6 +72,14 @@ resource "google_project_iam_member" "terraform_ci_editor" {
   member  = "serviceAccount:${google_service_account.terraform_ci.email}"
 }
 
+# roles/editor excludes iam.serviceAccounts.setIamPolicy, which is required to
+# destroy google_service_account_iam_member resources (Workload Identity bindings).
+resource "google_project_iam_member" "terraform_ci_sa_admin" {
+  project = var.project_id
+  role    = "roles/iam.serviceAccountAdmin"
+  member  = "serviceAccount:${google_service_account.terraform_ci.email}"
+}
+
 # ── Workload Identity Federation for GitHub Actions (no JSON keys in CI) ────────
 
 resource "google_iam_workload_identity_pool" "github" {
