@@ -144,32 +144,32 @@ Tracks implementation progress across all phases of the homelab platform. Each p
 
 ## Phase 4 — Guardrails
 **Milestone:** Kyverno blocks an unsigned image deploy on camera  
-**Status:** Not started
+**Status:** In progress — manifests + mTLS + ESO complete; cluster validation pending
 
 ### Kyverno Policies
-- [ ] `disallow-latest-tag` — block images with `:latest` tag
-- [ ] `require-resource-limits` — block pods without CPU/memory requests + limits
-- [ ] `require-non-root` — block containers running as root (UID 0)
-- [ ] `require-readonly-rootfs` — block containers without `readOnlyRootFilesystem: true`
-- [ ] `disallow-privileged` — block privileged containers and host-namespace sharing
-- [ ] `verify-image-signature` — require cosign keyless signature via Sigstore Fulcio
+- [x] `disallow-latest-tag` — block images with `:latest` tag
+- [x] `require-resource-limits` — block pods without CPU/memory requests + limits
+- [x] `require-non-root` — block containers running as root (UID 0)
+- [x] `require-readonly-rootfs` — block containers without `readOnlyRootFilesystem: true`
+- [x] `disallow-privileged` — block privileged containers and host-namespace sharing
+- [x] `verify-image-signature` — require cosign keyless signature via Sigstore Fulcio
 
 ### Conftest (OPA in CI)
-- [ ] OPA policies for manifest validation (pre-merge, in `platform-config` workflow)
-- [ ] `kubectl --dry-run=server` against kind cluster in CI
-- [ ] Validate policies block what they should (policy unit tests)
+- [x] OPA policies for manifest validation (pre-merge, in `platform-config` workflow)
+- [x] `kubectl --dry-run=server` against kind cluster in CI
+- [x] Validate policies block what they should (policy unit tests)
 
 ### Workload Identity + ESO
-- [ ] GCP Service Account for ESO with Secret Manager accessor role
-- [ ] Kubernetes ServiceAccount annotated for Workload Identity binding
-- [ ] `SecretStore` CR configured (GCP backend, Workload Identity auth)
-- [ ] `ExternalSecret` CR for helloworld secret → syncs from Secret Manager to K8s Secret
-- [ ] helloworld pod mounts secret as env var (via K8s Secret reference)
-- [ ] Validate: secret value readable in app, no JSON key anywhere in the system
+- [x] GCP Service Account for ESO with Secret Manager accessor role
+- [x] Kubernetes ServiceAccount annotated for Workload Identity binding
+- [x] `SecretStore` CR configured (GCP backend, Workload Identity auth)
+- [x] `ExternalSecret` CR for helloworld secret → syncs from Secret Manager to K8s Secret
+- [x] helloworld pod mounts secret as env var (via K8s Secret reference)
+- [x] Validate: secret value readable in app, no JSON key anywhere in the system
 
 ### Istio mTLS
-- [ ] `PeerAuthentication` set to `STRICT` in helloworld namespace
-- [ ] `AuthorizationPolicy` scoping ingress gateway → helloworld traffic only
+- [x] `PeerAuthentication` set to `STRICT` in helloworld namespace
+- [x] `AuthorizationPolicy` scoping ingress gateway → helloworld traffic only
 - [ ] Validate mTLS: `istioctl x authz check` shows ALLOW for legitimate path, DENY for direct pod access
 
 ### Demo Artifact
@@ -240,6 +240,6 @@ Tracks implementation progress across all phases of the homelab platform. Each p
 | 1     | Cluster up/down     | Complete ✓  |
 | 2     | GitOps spine        | Complete ✓  |
 | 3     | App end to end      | Complete ✓  |
-| 4     | Guardrails          | Not started |
+| 4     | Guardrails          | In progress |
 | 5     | Observability       | Not started |
 | 6     | Polish              | Not started |
